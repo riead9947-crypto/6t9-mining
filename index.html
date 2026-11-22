@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>6T9 EARN - USDT Earning Bot</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;font-family:'Segoe UI',Arial,sans-serif}
+body{background:#0a0a0a;color:#fff;padding-bottom:100px}
+.top{display:flex;align-items:center;gap:12px;padding:16px}
+.avatar{width:52px;height:52px;border-radius:50%;border:2px solid #d4af37;background:#222;display:grid;place-items:center;font-size:26px}
+.top h1{font-size:28px;color:#e8c55a;letter-spacing:1px;line-height:1}
+.top small{color:#888;font-size:12px}
+.page{display:none;padding:0 16px}.page.active{display:block}
+.balance-card{background:linear-gradient(135deg,#1a1a1a,#2a2110);border:1px solid #d4af37;border-radius:22px;padding:20px;box-shadow:0 0 30px rgba(212,175,55,.25)}
+.balance-card small{color:#d4af37;font-weight:700}
+.balance-card h2{font-size:52px;margin:8px 0}
+.balance-card h2 span{font-size:16px;background:#d4af37;color:#000;padding:4px 10px;border-radius:20px;vertical-align:middle}
+.balance-card p{color:#8bc34a;font-size:13px;margin-bottom:16px}
+.btn-gold{background:linear-gradient(90deg,#ffd700,#d4af37);color:#000;border:none;width:100%;padding:16px;border-radius:14px;font-weight:900;font-size:17px;cursor:pointer;box-shadow:0 5px 20px rgba(255,215,0,.4)}
+.btn-gold:disabled{background:#444;color:#888;box-shadow:none}
+.progress{margin:22px 0}
+.progress-top{display:flex;justify-content:space-between;font-weight:700;margin-bottom:8px}
+.bar{height:10px;background:#222;border-radius:20px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,#ffd700,#fff);border-radius:20px}
+.progress small{color:#aaa}
+.task{display:flex;align-items:center;gap:12px;background:#141414;border:1px solid #2a2a2a;border-radius:18px;padding:14px;margin-bottom:12px}
+.task-icon{width:52px;height:52px;border:1px solid #d4af37;border-radius:14px;display:grid;place-items:center;font-size:24px;flex-shrink:0;color:#d4af37}
+.task b{font-size:15px}.task small{color:#888;font-size:12px}
+.reward{background:#d4af37;color:#000;font-weight:900;font-size:12px;padding:6px 10px;border-radius:20px;white-space:nowrap}
+.task button{background:transparent;border:1px solid #444;color:#fff;padding:6px 14px;border-radius:10px;margin-top:6px;cursor:pointer}
+.card{background:#141414;border:1px solid #2a2a2a;border-radius:20px;padding:18px;margin-bottom:12px;text-align:center}
+.input{width:100%;padding:13px;background:#0a0a0a;border:1px solid #333;border-radius:12px;color:#fff;margin:8px 0;outline:none}
+.net-btn{flex:1;padding:12px;border-radius:12px;border:1px solid #333;background:#0a0a0a;color:#fff;font-weight:900;cursor:pointer}
+.net-btn.active{background:#d4af37!important;color:#000!important;border-color:#d4af37}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#111;display:flex;justify-content:space-around;padding:12px 0 20px;border-top:1px solid #222;z-index:20}
+.nav button{background:none;border:none;color:#777;font-size:11px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:4px}
+.nav button span{font-size:24px}.nav button.active{color:#e8c55a}
+</style>
+</head>
+<body>
+<div class="top"><div class="avatar">👤</div><div><h1>6T9 EARN</h1><small>USDT Earning Bot • Premium Rewards</small></div></div>
+
+<div id="p-home" class="page active">
+  <div class="balance-card">
+    <small>✦ Your Balance</small>
+    <h2>$<span id="bal">0.00</span> <span>USDT</span></h2>
+    <p>≈ <span id="bal2">0.00</span> USDT • +<span id="todayEarn">0.00</span> today</p>
+    <button class="btn-gold" id="adsBtn" onclick="watchAds()">▶ Watch Ads • Earn $0.002</button>
+    <p style="color:#888;margin:10px 0 0;text-align:center;font-size:12px" id="adsLeft">20 ads remaining today</p>
+  </div>
+  <div class="progress">
+    <div class="progress-top"><span>Daily Progress</span><span id="progText" style="color:#d4af37">0/20 completed</span></div>
+    <div class="bar"><i id="progBar" style="width:0%"></i></div>
+    <small id="progSub">Watch 20 ads to claim $0.05 bonus • Resets daily</small>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-bottom:12px"><b>Tasks • Earn More USDT</b><span style="color:#d4af37" onclick="show('tasks',null)">See all →</span></div>
+  <div id="homeTasks"></div>
+  <div style="display:flex;gap:12px">
+    <div class="card" style="flex:1" onclick="show('friends',null)"><span style="font-size:28px">👥</span><br><b>Refer Friends</b><br><small style="color:#888">Earn 10% per referral</small></div>
+    <div class="card" style="flex:1" onclick="show('wallet',null)"><span style="font-size:28px">💰</span><br><b>Wallet</b><br><small style="color:#888">Min: $1.00 USDT</small></div>
+  </div>
+</div>
+
+<div id="p-tasks" class="page"><h2 style="margin-bottom:14px">Tasks</h2><div id="taskList"></div></div>
+
+<div id="p-friends" class="page"><div class="card"><h2>👥 Refer Friends</h2><p style="color:#aaa;margin:8px 0">Invite friends, earn 10% of their earnings!</p><h1 style="font-size:32px;color:#e8c55a">0 Friends</h1><br><button class="btn-gold" onclick="invite()">📩 Invite Friend</button><br><br><input class="input" id="linkBox" readonly value="https://t.me/Sixtyning_bot?start=123"><button class="btn-gold" onclick="copyLink()" style="background:#333;color:#fff">Copy Link</button></div></div>
+
+<div id="p-wallet" class="page">
+  <div class="card">
+    <small style="color:#d4af37">WALLET BALANCE - USDT ONLY</small>
+    <h1 style="font-size:44px;margin:8px 0">$<span class="bal3">0.00</span> USDT</h1>
+    <p style="color:#888">Min Withdraw: $1.00 USDT • Fee: $0.00</p><br>
+    <p style="text-align:left;font-weight:700;margin-bottom:6px">Select Network</p>
+    <div style="display:flex;gap:10px;margin-bottom:10px">
+      <button class="net-btn active" id="btnBEP" onclick="selectNet('BEP20')">BEP20</button>
+      <button class="net-btn" id="btnTRC" onclick="selectNet('TRC20')">TRC20</button>
+    </div>
+    <input class="input" placeholder="Your USDT Wallet Address" id="walletAddr">
+    <small style="color:#888;display:block;text-align:left" id="addrHint">Example BEP20: 0x... (Binance / Trust Wallet)</small><br>
+    <input class="input" placeholder="Amount - Min $1" type="number" id="withdrawAmt">
+    <button class="btn-gold" onclick="withdraw()">💸 Request Withdraw</button>
+    <p style="color:#888;font-size:12px;margin-top:10px">Withdraw 24h er vitore tomar wallet e chole jabe.</p>
+  </div>
+  <div class="card" style="text-align:left"><b>Withdraw History</b><br><small style="color:#888" id="history">No withdrawals yet</small></div>
+</div>
+
+<nav class="nav">
+  <button class="active" onclick="show('home',this)"><span>🏠</span>Home</button>
+  <button onclick="show('tasks',this)"><span>☰</span>Tasks</button>
+  <button onclick="show('friends',this)"><span>👥</span>Refer</button>
+  <button onclick="show('wallet',this)"><span>💰</span>Wallet</button>
+</nav>
+
+<script>
+const tg=window.Telegram.WebApp; tg.ready(); tg.expand();
+let bal=parseFloat(localStorage.getItem('6t9_usdt')||'0.00');
+let adsToday=parseInt(localStorage.getItem('6t9_adsToday')||'0');
+let todayEarn=parseFloat(localStorage.getItem('6t9_today')||'0');
+let doneTasks=JSON.parse(localStorage.getItem('6t9_utasks')||'{}');
+let selectedNet='BEP20';
+let tasks=[
+  {id:'t1',title:'Join 6T9 Channel',desc:'Subscribe to our official channel',reward:0.20,emoji:'📤',link:'https://t.me/'},
+  {id:'t2',title:'Complete Profile',desc:'Verify your profile to unlock rewards',reward:0.15,emoji:'✅',link:'https://t.me/'},
+  {id:'t3',title:'Follow on X',desc:'Follow us on X (Twitter)',reward:0.10,emoji:'𝕏',link:'https://x.com/'},
+  {id:'t4',title:'Invite a Friend',desc:'Invite and earn when they join',reward:0.50,emoji:'👥',link:''},
+];
+function save(){localStorage.setItem('6t9_usdt',bal.toFixed(4));localStorage.setItem('6t9_adsToday',adsToday);localStorage.setItem('6t9_today',todayEarn);localStorage.setItem('6t9_utasks',JSON.stringify(doneTasks));updateUI();}
+function updateUI(){
+  document.getElementById('bal').innerText=bal.toFixed(2);
+  document.getElementById('bal2').innerText=bal.toFixed(2);
+  document.querySelectorAll('.bal3').forEach(e=>e.innerText=bal.toFixed(2));
+  document.getElementById('todayEarn').innerText=todayEarn.toFixed(2);
+  document.getElementById('progText').innerText=adsToday+'/20 completed';
+  document.getElementById('progBar').style.width=(adsToday/20*100)+'%';
+  document.getElementById('adsLeft').innerText=(20-adsToday)+' ads remaining today';
+  document.getElementById('progSub').innerText= adsToday>=20 ? '🎉 Bonus claimed! Come back tomorrow' : `Watch ${20-adsToday} more to claim $0.05 bonus`;
+  document.getElementById('adsBtn').disabled = adsToday>=20;
+  if(adsToday>=20) document.getElementById('adsBtn').innerText='✅ Daily Limit Reached';
+  renderTasks();
+}
+function show(id,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('p-'+id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');window.scrollTo(0,0);}
+function renderTasks(){
+  let h=''; tasks.forEach(t=>{let done=doneTasks[t.id]; h+=`<div class="task"><div class="task-icon">${t.emoji}</div><div style="flex:1"><b>${t.title}</b><br><small>${t.desc}</small><br><button ${done?'disabled':''} onclick="doTask('${t.id}','${t.link}',${t.reward})">${done?'✅ Completed':'Start'}</button></div><div class="reward">+${t.reward.toFixed(2)} USDT</div></div>`;});
+  document.getElementById('taskList').innerHTML=h; document.getElementById('homeTasks').innerHTML=h;
+}
+function doTask(id,link,reward){ if(link) window.open(link,'_blank'); if(id==='t4'){show('friends',null);return;} setTimeout(()=>{if(!doneTasks[id]){doneTasks[id]=true; bal+=reward; todayEarn+=reward; save(); alert('+$'+reward+' USDT!');}},1000); }
+function watchAds(){
+  if(adsToday>=20){alert('Daily limit reached!');return;}
+  let btn=document.getElementById('adsBtn'); btn.innerText='⏳ Watching Ads... 15s'; btn.disabled=true;
+  setTimeout(()=>{
+    adsToday++; bal+=0.002; todayEarn+=0.002;
+    if(adsToday===20){ bal+=0.05; alert('🎉 Bonus! +$0.05 USDT for completing 20 ads!'); }
+    save(); btn.disabled=false; btn.innerText='▶ Watch Ads • Earn $0.002'; alert('+$0.002 USDT! Keep watching!');
+  },3000);
+}
+function invite(){ if(tg.shareURL) tg.shareURL('https://t.me/Sixtyning_bot','Join 6T9 EARN - Earn USDT by Watching Ads!'); else alert('Copy link'); }
+function copyLink(){ let i=document.getElementById('linkBox'); i.select(); document.execCommand('copy'); alert('Link copied!'); }
+function selectNet(net){
+  selectedNet=net;
+  document.getElementById('btnBEP').classList.toggle('active', net==='BEP20');
+  document.getElementById('btnTRC').classList.toggle('active', net==='TRC20');
+  document.getElementById('addrHint').innerText = net==='BEP20' ? 'Example BEP20: 0x... (Binance / Trust Wallet)' : 'Example TRC20: T... (Tron Wallet)';
+}
+function withdraw(){
+  let addr=document.getElementById('walletAddr').value.trim();
+  let amt=parseFloat(document.getElementById('withdrawAmt').value||'0');
+  if(!addr){alert('Age Wallet Address dao!');return;}
+  if(selectedNet==='BEP20' && !addr.startsWith('0x')){alert('BEP20 address 0x diye suru hobe!');return;}
+  if(selectedNet==='TRC20' && !addr.startsWith('T')){alert('TRC20 address T diye suru hobe!');return;}
+  if(bal<1){alert('Minimum $1.00 lagbe!');return;}
+  if(amt<1||amt>bal){alert('Thik moto Amount dao!');return;}
+  bal-=amt; save();
+  document.getElementById('history').innerText='Pending: $'+amt+' USDT ('+selectedNet+') - '+addr.substring(0,10)+'... - '+new Date().toLocaleDateString();
+  alert('Withdraw request gelo! 24h er vitore '+selectedNet+' e $'+amt+' peye jaba!');
+}
+updateUI();
+</script>
+</body>
+</html>
