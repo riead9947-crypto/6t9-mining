@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>6T9 EARN - Premium</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;font-family:'Segoe UI',Arial,sans-serif}
+body{background:#070707;color:#fff;padding-bottom:110px;overflow-x:hidden}
+#splash{position:fixed;inset:0;background:radial-gradient(circle at 50% 20%, #2a1e08 0%, #070707 65%);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity .6s, visibility .6s}
+#splash.hide{opacity:0;visibility:hidden}
+.coin{position:absolute;font-size:28px;animation:fall linear infinite;opacity:.9}
+@keyframes fall{0%{transform:translateY(-60px) rotate(0deg);opacity:0}10%{opacity:1}100%{transform:translateY(110vh) rotate(360deg);opacity:0}}
+.logo-box{width:110px;height:110px;background:linear-gradient(135deg,#ffe066,#d4af37,#a67c00);border-radius:32px;display:grid;place-items:center;font-size:62px;box-shadow:0 0 60px rgba(255,215,0,.7),0 0 120px rgba(255,215,0,.3);animation:float 2s ease-in-out infinite;position:relative;z-index:2}
+@keyframes float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-12px) scale(1.05)}}
+.splash-title{font-size:42px;color:#fff;letter-spacing:3px;margin-top:20px;font-weight:900;z-index:2}
+.splash-title span{color:#ffd700;text-shadow:0 0 20px #ffd700}
+.splash-sub{color:#aaa;font-size:13px;margin-top:6px;letter-spacing:1px;z-index:2}
+.load-bar{width:200px;height:6px;background:#222;border-radius:20px;margin-top:26px;overflow:hidden;z-index:2}
+.load-bar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#ffd700,#fff);border-radius:20px;animation:load 1.8s forwards}
+@keyframes load{to{width:100%}}
+.top{display:flex;align-items:center;gap:12px;padding:16px}
+.avatar{width:54px;height:54px;border-radius:50%;border:2px solid #d4af37;background:linear-gradient(135deg,#333,#111);display:grid;place-items:center;font-size:26px;box-shadow:0 0 15px rgba(212,175,55,.4)}
+.top h1{font-size:26px;color:#e8c55a;line-height:1}
+.top small{color:#888;font-size:11px}
+.lvl{margin-left:auto;text-align:right;background:#141414;padding:8px 12px;border-radius:12px;border:1px solid #2a2a2a}
+.lvl b{color:#ffd700;font-size:13px}
+/* LANGUAGE BAR - NEW */
+.lang-bar{display:flex;gap:6px;overflow-x:auto;padding:0 16px 12px;scrollbar-width:none}
+.lang-bar::-webkit-scrollbar{display:none}
+.lang-bar button{background:#141414;border:1px solid #2a2a2a;color:#fff;padding:7px 12px;border-radius:20px;white-space:nowrap;cursor:pointer;font-size:12px}
+.lang-bar button.active{background:#d4af37;color:#000;border-color:#d4af37;font-weight:800}
+.page{display:none;padding:0 16px;animation:fade .3s}.page.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.balance-card{background:linear-gradient(135deg,#1c1c1c,#2a1e08 60%,#1a1a1a);border:1px solid #d4af37;border-radius:24px;padding:22px;box-shadow:0 10px 40px rgba(212,175,55,.25);position:relative;overflow:hidden}
+.balance-card::after{content:'💰';position:absolute;right:10px;top:10px;font-size:70px;opacity:.12;transform:rotate(15deg)}
+.balance-card small{color:#d4af37;font-weight:800;letter-spacing:1px}
+.balance-card h2{font-size:54px;margin:8px 0}
+.balance-card h2 span{font-size:15px;background:#d4af37;color:#000;padding:5px 10px;border-radius:20px;vertical-align:middle}
+.balance-card p{color:#8bc34a;font-size:13px;margin-bottom:16px}
+.btn-gold{background:linear-gradient(90deg,#ffe066,#d4af37);color:#000;border:none;width:100%;padding:16px;border-radius:15px;font-weight:900;font-size:17px;cursor:pointer;box-shadow:0 8px 25px rgba(255,215,0,.35);transition:.2s}
+.btn-gold:active{transform:scale(.97)}
+.btn-gold:disabled{background:#333;color:#777;box-shadow:none}
+.progress{margin:22px 0}
+.progress-top{display:flex;justify-content:space-between;font-weight:700;margin-bottom:8px}
+.bar{height:10px;background:#222;border-radius:20px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,#ffd700,#fff);border-radius:20px;transition:.5s}
+/* CHECK-IN SMALL - MOVED TO TASKS */
+.checkin{display:flex;gap:6px;margin:10px 0 4px}
+.day{flex:1;background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:7px 0;text-align:center;font-size:10px}
+.day b{display:block;color:#ffd700;font-size:11px}.day.done{background:#1a2a10;border-color:#4caf50}
+.day.current{border:2px solid #d4af37}
+.task{display:flex;align-items:center;gap:12px;background:#141414;border:1px solid #232323;border-radius:18px;padding:14px;margin-bottom:12px}
+.task-icon{width:52px;height:52px;border:1px solid #d4af37;border-radius:14px;display:grid;place-items:center;font-size:24px;flex-shrink:0;color:#d4af37;background:#1a1a1a}
+.task b{font-size:15px}.task small{color:#888;font-size:12px}
+.reward{background:#d4af37;color:#000;font-weight:900;font-size:12px;padding:6px 10px;border-radius:20px;white-space:nowrap}
+.task button{background:transparent;border:1px solid #444;color:#fff;padding:6px 14px;border-radius:10px;margin-top:6px;cursor:pointer}
+.card{background:#141414;border:1px solid #2a2a2a;border-radius:20px;padding:18px;margin-bottom:12px;text-align:center}
+.input{width:100%;padding:13px;background:#0a0a0a;border:1px solid #333;border-radius:12px;color:#fff;margin:8px 0;outline:none}
+.net-btn{flex:1;padding:12px;border-radius:12px;border:1px solid #333;background:#0a0a0a;color:#fff;font-weight:900;cursor:pointer}
+.net-btn.active{background:#d4af37!important;color:#000!important;border-color:#d4af37}
+.nav{position:fixed;bottom:0;left:0;right:0;background:rgba(17,17,17,.95);backdrop-filter:blur(10px);display:flex;justify-content:space-around;padding:12px 0 22px;border-top:1px solid #222;z-index:20}
+.nav button{background:none;border:none;color:#777;font-size:11px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:4px}
+.nav button span{font-size:24px}.nav button.active{color:#e8c55a;transform:scale(1.05)}
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="coin" style="left:10%;animation-duration:2.5s">🪙</div>
+  <div class="coin" style="left:25%;animation-duration:3.2s;animation-delay:.5s">💰</div>
+  <div class="coin" style="left:45%;animation-duration:2.8s;animation-delay:1s">🪙</div>
+  <div class="coin" style="left:65%;animation-duration:3.5s;animation-delay:.2s">💵</div>
+  <div class="coin" style="left:85%;animation-duration:2.2s;animation-delay:.8s">🪙</div>
+  <div class="coin" style="left:35%;animation-duration:3.8s;animation-delay:1.2s">💰</div>
+  <div class="logo-box">💰</div>
+  <div class="splash-title">6T9 <span>EARN</span></div>
+  <div class="splash-sub">✨ EARN USDT • WATCH ADS • GET PAID ✨</div>
+  <div class="load-bar"><i></i></div>
+  <p style="color:#888;font-size:12px;margin-top:12px" id="loadText">Loading your wallet...</p>
+  <div style="position:absolute;bottom:30px;color:#555;font-size:11px;letter-spacing:2px">PREMIUM • FAST • TRUSTED</div>
+</div>
+
+<div class="top"><div class="avatar">👤</div><div><h1>6T9 EARN</h1><small>USDT Earning Bot • Premium</small></div><div class="lvl"><small style="color:#888">LEVEL</small><br><b id="lvlText">Lv 1 • New</b></div></div>
+
+<!-- LANGUAGE BAR - HOME TOP -->
+<div class="lang-bar" id="langBar">
+  <button onclick="setLang('en')" data-lang="en" class="active">🇬🇧 English</button>
+  <button onclick="setLang('ru')" data-lang="ru">🇷🇺 Russian</button>
+  <button onclick="setLang('es')" data-lang="es">🇪🇸 Spanish</button>
+  <button onclick="setLang('hi')" data-lang="hi">🇮🇳 Hindi</button>
+  <button onclick="setLang('pt')" data-lang="pt">🇵🇹 Portuguese</button>
+  <button onclick="setLang('tr')" data-lang="tr">🇹🇷 Turkish</button>
+  <button onclick="setLang('ar')" data-lang="ar">🇦🇪 Arabic</button>
+</div>
+
+<div id="p-home" class="page active">
+  <div class="balance-card">
+    <small id="t_balLabel">✦ YOUR BALANCE</small>
+    <h2>$<span id="bal">0.000</span> <span>USDT</span></h2>
+    <p>≈ <span id="bal2">0.000</span> USDT • +<span id="todayEarn">0.000</span> <span id="t_today">today</span></p>
+    <button class="btn-gold" id="adsBtn" onclick="watchAds()">▶ Watch Ads • Earn $0.001</button>
+    <p style="color:#888;margin:10px 0 0;text-align:center;font-size:12px" id="adsLeft">30 ads remaining today</p>
+  </div>
+  <div class="progress">
+    <div class="progress-top"><span id="t_dailyProg">Daily Progress</span><span id="progText" style="color:#d4af37">0/30 completed</span></div>
+    <div class="bar"><i id="progBar" style="width:0%"></i></div>
+    <small id="progSub">Watch 30 ads to claim $0.01 bonus</small>
+  </div>
+  <div style="background:linear-gradient(135deg,#0a1a2a,#0a0a0a);border:1px solid #2196F3;border-radius:18px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:12px">
+    <div style="width:52px;height:52px;background:#2196F3;border-radius:14px;display:grid;place-items:center;font-size:26px">📢</div>
+    <div style="flex:1"><b id="t_joinTitle">Join Our Channel</b><br><small style="color:#aaa" id="t_joinDesc">Join and get $0.005 USDT!</small><br><button style="background:#2196F3;border:none;color:#fff;padding:6px 14px;border-radius:10px;margin-top:6px" onclick="joinChannel()" id="t_joinBtn">Join Channel</button></div>
+    <div style="background:#2196F3;color:#fff;font-weight:900;font-size:12px;padding:6px 10px;border-radius:20px">+$0.005</div>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-bottom:12px"><b id="t_tasksHome">Tasks • Earn More USDT</b><span style="color:#d4af37" onclick="show('tasks',null)" id="t_seeAll">See all →</span></div>
+  <div id="homeTasks"></div>
+  <div style="display:flex;gap:12px">
+    <div class="card" style="flex:1" onclick="show('friends',null)"><span style="font-size:28px">👥</span><br><b id="t_referHome">Refer Friends</b><br><small style="color:#888" id="t_referDesc">Earn 5% per referral</small></div>
+    <div class="card" style="flex:1" onclick="show('wallet',null)"><span style="font-size:28px">💰</span><br><b id="t_walletHome">Wallet</b><br><small style="color:#888">Min: $0.50 USDT</small></div>
+  </div>
+</div>
+
+<div id="p-tasks" class="page">
+  <h2 style="margin-bottom:14px" id="t_tasksPage">Tasks</h2>
+  <!-- DAILY CHECK-IN - NOW IN TASKS, SMALL -->
+  <div class="card" style="text-align:left;padding:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center"><b id="t_checkin">📅 Daily Check-in</b><small style="color:#888" id="checkinTimer"></small></div>
+    <div class="checkin" id="checkinRow"></div>
+    <button class="btn-gold" id="claimBtn" onclick="claimCheckin()" style="padding:12px;font-size:14px">Claim Today</button>
+    <small style="color:#888;display:block;margin-top:6px" id="t_checkinNote">Claim every 24 hours. Miss 1 day = Restart from Day 1.</small>
+  </div>
+  <div id="taskList"></div>
+</div>
+<div id="p-friends" class="page"><div class="card"><h2>👥 <span id="t_referPage">Refer Friends</span></h2><p style="color:#aaa;margin:8px 0" id="t_referPageDesc">Invite friends, earn 5% of their earnings!</p><h1 style="font-size:32px;color:#e8c55a">0 Friends</h1><br><button class="btn-gold" onclick="invite()" id="t_inviteBtn">📩 Invite Friend</button><br><br><input class="input" id="linkBox" readonly value="https://t.me/Sixtyning_bot?start=123"><button class="btn-gold" onclick="copyLink()" style="background:#333;color:#fff" id="t_copyBtn">Copy Link</button></div></div>
+<div id="p-wallet" class="page">
+  <div class="card"><small style="color:#d4af37" id="t_walletLabel">WALLET BALANCE - USDT ONLY</small><h1 style="font-size:44px;margin:8px 0">$<span class="bal3">0.000</span> USDT</h1><p style="color:#888" id="t_walletInfo">Min Withdraw: $0.50 USDT • Fee: $0.00</p><br><p style="text-align:left;font-weight:700;margin-bottom:6px" id="t_selectNet">Select Network</p><div style="display:flex;gap:10px;margin-bottom:10px"><button class="net-btn active" id="btnBEP" onclick="selectNet('BEP20')">BEP20</button><button class="net-btn" id="btnTRC" onclick="selectNet('TRC20')">TRC20</button></div><input class="input" placeholder="Your USDT Wallet Address" id="walletAddr"><small style="color:#888;display:block;text-align:left" id="addrHint">Example BEP20: 0x... (Binance / Trust Wallet)</small><br><input class="input" placeholder="Amount - Min $0.50" type="number" id="withdrawAmt"><button class="btn-gold" onclick="withdraw()" id="t_withdrawBtn">💸 Request Withdraw</button><p style="color:#888;font-size:12px;margin-top:10px" id="t_withdrawNote">Withdraw will arrive in your wallet within 24 hours.</p></div>
+  <div class="card" style="text-align:left"><b id="t_historyTitle">Withdraw History</b><br><small style="color:#888" id="history">No withdrawals yet</small></div>
+</div>
+
+<nav class="nav">
+  <button class="active" onclick="show('home',this)"><span>🏠</span><span id="navHome">Home</span></button>
+  <button onclick="show('tasks',this)"><span>☰</span><span id="navTasks">Tasks</span></button>
+  <button onclick="show('friends',this)"><span>👥</span><span id="navRefer">Refer</span></button>
+  <button onclick="show('wallet',this)"><span>💰</span><span id="navWallet">Wallet</span></button>
+</nav>
+
+<script>
+const tg=window.Telegram.WebApp; tg.ready(); tg.expand();
+// --- LANGUAGE SYSTEM ---
+const LANGS={
+en:{balLabel:"✦ YOUR BALANCE",today:"today",dailyProg:"Daily Progress",joinTitle:"Join Our Channel",joinDesc:"Join and get $0.005 USDT!",joinBtn:"Join Channel",tasksHome:"Tasks • Earn More USDT",seeAll:"See all →",referHome:"Refer Friends",referDesc:"Earn 5% per referral",walletHome:"Wallet",tasksPage:"Tasks",checkin:"📅 Daily Check-in",checkinNote:"Claim every 24 hours. Miss 1 day = Restart from Day 1.",claim:"Claim Today",claimed:"✅ Claimed - Come back in 24h",wait:"Wait: ",referPage:"Refer Friends",referPageDesc:"Invite friends, earn 5% of their earnings!",inviteBtn:"📩 Invite Friend",copyBtn:"Copy Link",walletLabel:"WALLET BALANCE - USDT ONLY",walletInfo:"Min Withdraw: $0.50 USDT • Fee: $0.00",selectNet:"Select Network",withdrawBtn:"💸 Request Withdraw",withdrawNote:"Withdraw will arrive in your wallet within 24 hours.",historyTitle:"Withdraw History",navHome:"Home",navTasks:"Tasks",navRefer:"Refer",navWallet:"Wallet",progSub:"Watch 30 ads to claim $0.01 bonus",adsLeft:" ads remaining today"},
+ru:{balLabel:"✦ ВАШ БАЛАНС",today:"сегодня",dailyProg:"Ежедневный прогресс",joinTitle:"Наш канал",joinDesc:"Подпишись и получи $0.005 USDT!",joinBtn:"Подписаться",tasksHome:"Задания • Зарабатывай больше",seeAll:"Все →",referHome:"Пригласить друзей",referDesc:"5% за реферала",walletHome:"Кошелек",tasksPage:"Задания",checkin:"📅 Ежедневный бонус",checkinNote:"Забирайте каждые 24 часа. Пропустили 1 день = Начать с 1 дня.",claim:"Забрать сегодня",claimed:"✅ Забрано - Вернитесь через 24ч",wait:"Ждите: ",referPage:"Пригласить друзей",referPageDesc:"Приглашайте друзей, получайте 5% от их заработка!",inviteBtn:"📩 Пригласить",copyBtn:"Копировать ссылку",walletLabel:"БАЛАНС КОШЕЛЬКА - ТОЛЬКО USDT",walletInfo:"Мин. вывод: $0.50 USDT • Комиссия: $0.00",selectNet:"Выберите сеть",withdrawBtn:"💸 Запросить вывод",withdrawNote:"Вывод придет на ваш кошелек в течение 24 часов.",historyTitle:"История выводов",navHome:"Главная",navTasks:"Задания",navRefer:"Рефералы",navWallet:"Кошелек",progSub:"Смотрите 30 реклам, чтобы получить бонус $0.01",adsLeft:" реклам осталось сегодня"},
+es:{balLabel:"✦ TU SALDO",today:"hoy",dailyProg:"Progreso diario",joinTitle:"Únete a nuestro canal",joinDesc:"¡Únete y consigue $0.005 USDT!",joinBtn:"Unirse",tasksHome:"Tareas • Gana más USDT",seeAll:"Ver todo →",referHome:"Invitar amigos",referDesc:"Gana 5% por referido",walletHome:"Billetera",tasksPage:"Tareas",checkin:"📅 Check-in Diario",checkinNote:"Reclama cada 24 horas. Si pierdes 1 día = Empieza desde el Día 1.",claim:"Reclamar Hoy",claimed:"✅ Reclamado - Vuelve en 24h",wait:"Espera: ",referPage:"Invitar amigos",referPageDesc:"¡Invita amigos, gana el 5% de sus ganancias!",inviteBtn:"📩 Invitar amigo",copyBtn:"Copiar enlace",walletLabel:"SALDO DE BILLETERA - SOLO USDT",walletInfo:"Retiro mínimo: $0.50 USDT • Comisión: $0.00",selectNet:"Seleccionar red",withdrawBtn:"💸 Solicitar retiro",withdrawNote:"El retiro llegará a tu billetera en 24 horas.",historyTitle:"Historial de retiros",navHome:"Inicio",navTasks:"Tareas",navRefer:"Referidos",navWallet:"Billetera",progSub:"Mira 30 anuncios para reclamar $0.01 de bono",adsLeft:" anuncios restantes hoy"},
+hi:{balLabel:"✦ आपका बैलेंस",today:"आज",dailyProg:"दैनिक प्रगति",joinTitle:"हमारा चैनल जॉइन करें",joinDesc:"जॉइन करें और $0.005 USDT पाएं!",joinBtn:"जॉइन करें",tasksHome:"टास्क • और USDT कमाएं",seeAll:"सभी देखें →",referHome:"दोस्तों को आमंत्रित करें",referDesc:"प्रति रेफरल 5% कमाएं",walletHome:"वॉलेट",tasksPage:"टास्क",checkin:"📅 डेली चेक-इन",checkinNote:"हर 24 घंटे में क्लेम करें। 1 दिन छूटा = फिर से दिन 1 से शुरू।",claim:"आज क्लेम करें",claimed:"✅ क्लेम हो गया - 24 घंटे बाद आएं",wait:"रुकें: ",referPage:"दोस्तों को आमंत्रित करें",referPageDesc:"दोस्तों को आमंत्रित करें, उनकी कमाई का 5% कमाएं!",inviteBtn:"📩 दोस्त को आमंत्रित करें",copyBtn:"लिंक कॉपी करें",walletLabel:"वॉलेट बैलेंस - केवल USDT",walletInfo:"न्यूनतम निकासी: $0.50 USDT • शुल्क: $0.00",selectNet:"नेटवर्क चुनें",withdrawBtn:"💸 निकासी का अनुरोध करें",withdrawNote:"निकासी 24 घंटों के भीतर आपके वॉलेट में आ जाएगी।",historyTitle:"निकासी इतिहास",navHome:"होम",navTasks:"टास्क",navRefer:"रेफर",navWallet:"वॉलेट",progSub:"$0.01 बोनस के लिए 30 विज्ञापन देखें",adsLeft:" विज्ञापन शेष हैं आज"},
+pt:{balLabel:"✦ SEU SALDO",today:"hoje",dailyProg:"Progresso diário",joinTitle:"Entre no nosso canal",joinDesc:"Entre e ganhe $0.005 USDT!",joinBtn:"Entrar",tasksHome:"Tarefas • Ganhe mais USDT",seeAll:"Ver tudo →",referHome:"Convidar amigos",referDesc:"Ganhe 5% por indicação",walletHome:"Carteira",tasksPage:"Tarefas",checkin:"📅 Check-in Diário",checkinNote:"Resgate a cada 24 horas. Perdeu 1 dia = Recomeça do Dia 1.",claim:"Resgatar Hoje",claimed:"✅ Resgatado - Volte em 24h",wait:"Aguarde: ",referPage:"Convidar amigos",referPageDesc:"Convide amigos, ganhe 5% dos ganhos deles!",inviteBtn:"📩 Convidar amigo",copyBtn:"Copiar link",walletLabel:"SALDO DA CARTEIRA - APENAS USDT",walletInfo:"Saque mínimo: $0.50 USDT • Taxa: $0.00",selectNet:"Selecionar rede",withdrawBtn:"💸 Solicitar saque",withdrawNote:"O saque chegará na sua carteira em 24 horas.",historyTitle:"Histórico de saques",navHome:"Início",navTasks:"Tarefas",navRefer:"Indicar",navWallet:"Carteira",progSub:"Assista 30 anúncios para ganhar bônus de $0.01",adsLeft:" anúncios restantes hoje"},
+tr:{balLabel:"✦ BAKİYENİZ",today:"bugün",dailyProg:"Günlük İlerleme",joinTitle:"Kanalımıza Katıl",joinDesc:"Katıl ve $0.005 USDT kazan!",joinBtn:"Katıl",tasksHome:"Görevler • Daha fazla kazan",seeAll:"Tümünü gör →",referHome:"Arkadaş Davet Et",referDesc:"Referans başına %5 kazan",walletHome:"Cüzdan",tasksPage:"Görevler",checkin:"📅 Günlük Giriş",checkinNote:"Her 24 saatte bir al. 1 gün kaçırırsan = 1. Günden başla.",claim:"Bugün Al",claimed:"✅ Alındı - 24 saat sonra gel",wait:"Bekle: ",referPage:"Arkadaş Davet Et",referPageDesc:"Arkadaş davet et, kazançlarının %5'ini kazan!",inviteBtn:"📩 Arkadaş Davet Et",copyBtn:"Linki Kopyala",walletLabel:"CÜZDAN BAKİYESİ - SADECE USDT",walletInfo:"Min. Çekim: $0.50 USDT • Ücret: $0.00",selectNet:"Ağ Seç",withdrawBtn:"💸 Çekim Talebi",withdrawNote:"Çekim 24 saat içinde cüzdanınıza ulaşacak.",historyTitle:"Çekim Geçmişi",navHome:"Ana Sayfa",navTasks:"Görevler",navRefer:"Davet",navWallet:"Cüzdan",progSub:"$0.01 bonus için 30 reklam izle",adsLeft:" reklam kaldı bugün"},
+ar:{balLabel:"✦ رصيدك",today:"اليوم",dailyProg:"التقدم اليومي",joinTitle:"انضم إلى قناتنا",joinDesc:"انضم واحصل على $0.005 USDT!",joinBtn:"انضم",tasksHome:"المهام • اربح المزيد",seeAll:"عرض الكل →",referHome:"دعوة الأصدقاء",referDesc:"اربح 5% لكل إحالة",walletHome:"المحفظة",tasksPage:"المهام",checkin:"📅 تسجيل الدخول اليومي",checkinNote:"اطلب كل 24 ساعة. فاتك يوم واحد = ابدأ من اليوم 1.",claim:"اطلب اليوم",claimed:"✅ تم الطلب - عد بعد 24 ساعة",wait:"انتظر: ",referPage:"دعوة الأصدقاء",referPageDesc:"ادعُ أصدقاءك، اربح 5% من أرباحهم!",inviteBtn:"📩 دعوة صديق",copyBtn:"نسخ الرابط",walletLabel:"رصيد المحفظة - USDT فقط",walletInfo:"الحد الأدنى للسحب: $0.50 USDT • الرسوم: $0.00",selectNet:"اختر الشبكة",withdrawBtn:"💸 طلب سحب",withdrawNote:"سيصل السحب إلى محفظتك خلال 24 ساعة.",historyTitle:"سجل السحوبات",navHome:"الرئيسية",navTasks:"المهام",navRefer:"إحالة",navWallet:"المحفظة",progSub:"شاهد 30 إعلانًا للحصول على مكافأة $0.01",adsLeft:" إعلان متبق اليوم"}
+};
+let curLang=localStorage.getItem('6t9_lang')||'en';
+function setLang(l){curLang=l;localStorage.setItem('6t9_lang',l);let t=LANGS[l];document.getElementById('t_balLabel').innerText=t.balLabel;document.getElementById('t_today').innerText=t.today;document.getElementById('t_dailyProg').innerText=t.dailyProg;document.getElementById('t_joinTitle').innerText=t.joinTitle;document.getElementById('t_joinDesc').innerText=t.joinDesc;document.getElementById('t_joinBtn').innerText=t.joinBtn;document.getElementById('t_tasksHome').innerText=t.tasksHome;document.getElementById('t_seeAll').innerText=t.seeAll;document.getElementById('t_referHome').innerText=t.referHome;document.getElementById('t_referDesc').innerText=t.referDesc;document.getElementById('t_walletHome').innerText=t.walletHome;document.getElementById('t_tasksPage').innerText=t.tasksPage;document.getElementById('t_checkin').innerText=t.checkin;document.getElementById('t_checkinNote').innerText=t.checkinNote;document.getElementById('t_referPage').innerText=t.referPage;document.getElementById('t_referPageDesc').innerText=t.referPageDesc;document.getElementById('t_inviteBtn').innerText=t.inviteBtn;document.getElementById('t_copyBtn').innerText=t.copyBtn;document.getElementById('t_walletLabel').innerText=t.walletLabel;document.getElementById('t_walletInfo').innerText=t.walletInfo;document.getElementById('t_selectNet').innerText=t.selectNet;document.getElementById('t_withdrawBtn').innerText=t.withdrawBtn;document.getElementById('t_withdrawNote').innerText=t.withdrawNote;document.getElementById('t_historyTitle').innerText=t.historyTitle;document.getElementById('navHome').innerText=t.navHome;document.getElementById('navTasks').innerText=t.navTasks;document.getElementById('navRefer').innerText=t.navRefer;document.getElementById('navWallet').innerText=t.navWallet;document.querySelectorAll('#langBar button').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));updateUI();}
+
+let texts=["Loading your wallet...","Checking daily bonus...","Loading channel tasks...","Loading real ads...","Almost ready..."];
+let ti=0; let txtInt=setInterval(()=>{ti++; if(ti<texts.length) document.getElementById('loadText').innerText=texts[ti];},450);
+setTimeout(()=>{clearInterval(txtInt); document.getElementById('splash').classList.add('hide'); setTimeout(()=>document.getElementById('splash').remove(),600)},2200);
+let bal=parseFloat(localStorage.getItem('6t9_usdt')||'0');
+let adsToday=parseInt(localStorage.getItem('6t9_adsToday')||'0');
+let todayEarn=parseFloat(localStorage.getItem('6t9_today')||'0');
+let doneTasks=JSON.parse(localStorage.getItem('6t9_utasks')||'{}');
+// --- DAILY CHECK-IN FIXED: 24H + RESET ---
+let checkinState=JSON.parse(localStorage.getItem('6t9_checkin_v2')||'{"day":0,"lastClaim":0}');
+let selectedNet='BEP20';
+let tasks=[
+  {id:'t2',title:'Complete Profile',desc:'Verify your profile',reward:0.005,emoji:'✅',link:'https://t.me/'},
+  {id:'t3',title:'Follow on X',desc:'Follow us on X (Twitter)',reward:0.003,emoji:'𝕏',link:'https://x.com/'},
+  {id:'t4',title:'Invite a Friend',desc:'Invite and earn',reward:0.01,emoji:'👥',link:''},
+];
+function save(){localStorage.setItem('6t9_usdt',bal.toFixed(5));localStorage.setItem('6t9_adsToday',adsToday);localStorage.setItem('6t9_today',todayEarn);localStorage.setItem('6t9_utasks',JSON.stringify(doneTasks));localStorage.setItem('6t9_checkin_v2',JSON.stringify(checkinState));updateUI();}
+function updateUI(){
+  let t=LANGS[curLang];
+  document.getElementById('bal').innerText=bal.toFixed(3);
+  document.getElementById('bal2').innerText=bal.toFixed(3);
+  document.querySelectorAll('.bal3').forEach(e=>e.innerText=bal.toFixed(3));
+  document.getElementById('todayEarn').innerText=todayEarn.toFixed(3);
+  document.getElementById('progText').innerText=adsToday+'/30 completed';
+  document.getElementById('progBar').style.width=(adsToday/30*100)+'%';
+  document.getElementById('adsLeft').innerText=(30-adsToday)+t.adsLeft;
+  document.getElementById('progSub').innerText= adsToday>=30 ? '🎉 Bonus claimed! Come back tomorrow' : `Watch ${30-adsToday} more to claim $0.01 bonus`;
+  document.getElementById('adsBtn').disabled = adsToday>=30;
+  if(adsToday>=30) document.getElementById('adsBtn').innerText='✅ Daily Limit Reached';
+  let lvl = bal>=5 ? 'Lv 4 • Whale 🐋' : bal>=1 ? 'Lv 3 • Pro 💎' : bal>=0.50 ? 'Lv 2 • Active 🔥' : 'Lv 1 • New 🌱';
+  document.getElementById('lvlText').innerText=lvl;
+  renderTasks(); renderCheckin();
+}
+function renderCheckin(){
+  let t=LANGS[curLang];
+  let now=Date.now();
+  // Missed >48h = Reset to Day 1
+  if(checkinState.lastClaim>0 && now - checkinState.lastClaim > 48*60*60*1000){ checkinState={day:0,lastClaim:0}; localStorage.setItem('6t9_checkin_v2',JSON.stringify(checkinState)); }
+  let canClaim = (now - checkinState.lastClaim >= 24*60*60*1000) || checkinState.lastClaim===0;
+  let rewards=[0.001,0.001,0.002,0.002,0.003,0.005,0.01];
+  let h='';
+  rewards.forEach((r,i)=>{
+    let cls='day';
+    if(i<checkinState.day) cls+=' done';
+    else if(i===checkinState.day && canClaim) cls+=' current';
+    h+=`<div class="${cls}">Day ${i+1}<b>${i<checkinState.day?'✅':'+$'+r}</b></div>`;
+  });
+  document.getElementById('checkinRow').innerHTML=h;
+  let btn=document.getElementById('claimBtn');
+  if(canClaim){ btn.disabled=false; btn.innerText=t.claim; document.getElementById('checkinTimer').innerText=''; }
+  else{ btn.disabled=true; btn.innerText=t.claimed; let left=24*60*60*1000-(now-checkinState.lastClaim); let hh=Math.floor(left/3600000), mm=Math.floor(left%3600000/60000); document.getElementById('checkinTimer').innerText=`${t.wait}${hh}h ${mm}m`; }
+}
+function claimCheckin(){
+  let now=Date.now();
+  if(checkinState.lastClaim!==0 && now - checkinState.lastClaim < 24*60*60*1000){ alert('Please wait 24 hours!'); return; }
+  let rewards=[0.001,0.001,0.002,0.002,0.003,0.005,0.01];
+  let r=rewards[checkinState.day];
+  checkinState.day=checkinState.day+1; if(checkinState.day>=7) checkinState.day=0;
+  checkinState.lastClaim=now;
+  bal+=r; todayEarn+=r; save(); alert('Daily Bonus +$'+r+' USDT!');
+}
+function show(id,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('p-'+id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');window.scrollTo(0,0);}
+function renderTasks(){
+  let h=''; tasks.forEach(t=>{let done=doneTasks[t.id]; h+=`<div class="task"><div class="task-icon">${t.emoji}</div><div style="flex:1"><b>${t.title}</b><br><small>${t.desc}</small><br><button ${done?'disabled':''} onclick="doTask('${t.id}','${t.link}',${t.reward})">${done?'✅ Completed':'Start'}</button></div><div class="reward">+$${t.reward.toFixed(3)} USDT</div></div>`;});
+  document.getElementById('taskList').innerHTML=h; document.getElementById('homeTasks').innerHTML=h;
+}
+function doTask(id,link,reward){ if(link) window.open(link,'_blank'); if(id==='t4'){show('friends',null);return;} setTimeout(()=>{if(!doneTasks[id]){doneTasks[id]=true; bal+=reward; todayEarn+=reward; save(); alert('+$'+reward+' USDT!');}},1000); }
+function joinChannel(){
+  window.open('https://t.me/YOUR_CHANNEL_HERE','_blank');
+  setTimeout(()=>{
+    if(!doneTasks['channel']){ doneTasks['channel']=true; bal+=0.005; todayEarn+=0.005; save(); alert('Channel Join Bonus +$0.005 USDT!'); }
+  },2000);
+}
+function watchAds(){
+  if(adsToday>=30){alert('Daily limit reached!');return;}
+  let btn=document.getElementById('adsBtn'); btn.innerText='⏳ Loading Ads...'; btn.disabled=true;
+  try{
+    const AdController = window.Adsgram.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID" });
+    AdController.show().then((result)=>{
+      adsToday++; bal+=0.001; todayEarn+=0.001;
+      if(adsToday===30){ bal+=0.01; alert('🎉 Bonus! +$0.01 USDT!'); }
+      save(); btn.disabled=false; btn.innerText='▶ Watch Ads • Earn $0.001'; alert('+$0.001 USDT!');
+    }).catch((result)=>{
+      adsToday++; bal+=0.001; todayEarn+=0.001; save(); btn.disabled=false; btn.innerText='▶ Watch Ads • Earn $0.001'; alert('+$0.001 USDT! (Demo - Add AdsGram ID for real ads)');
+    });
+  }catch(e){
+    adsToday++; bal+=0.001; todayEarn+=0.001; save(); btn.disabled=false; btn.innerText='▶ Watch Ads • Earn $0.001'; alert('+$0.001 USDT!');
+  }
+}
+function invite(){ if(tg.shareURL) tg.shareURL('https://t.me/Sixtyning_bot','Join 6T9 EARN - Earn USDT by Watching Ads!'); else alert('Copy link'); }
+function copyLink(){ let i=document.getElementById('linkBox'); i.select(); document.execCommand('copy'); alert('Link copied!'); }
+function selectNet(net){ selectedNet=net; document.getElementById('btnBEP').classList.toggle('active', net==='BEP20'); document.getElementById('btnTRC').classList.toggle('active', net==='TRC20'); document.getElementById('addrHint').innerText = net==='BEP20' ? 'Example BEP20: 0x... (Binance / Trust Wallet)' : 'Example TRC20: T... (Tron Wallet)'; }
+function withdraw(){
+  let addr=document.getElementById('walletAddr').value.trim();
+  let amt=parseFloat(document.getElementById('withdrawAmt').value||'0');
+  if(!addr){alert('Please enter your Wallet Address first!');return;}
+  if(selectedNet==='BEP20' && !addr.startsWith('0x')){alert('BEP20 address must start with 0x!');return;}
+  if(selectedNet==='TRC20' && !addr.startsWith('T')){alert('TRC20 address must start with T!');return;}
+  if(bal<0.50){alert('Minimum $0.50 required!');return;}
+  if(amt<0.50||amt>bal){alert('Please enter a valid Amount!');return;}
+  bal-=amt; save();
+  document.getElementById('history').innerText='Pending: $'+amt+' USDT ('+selectedNet+') - '+addr.substring(0,10)+'... - '+new Date().toLocaleDateString();
+  alert('Withdraw request sent! You will receive $'+amt+' in '+selectedNet+' within 24 hours!');
+}
+setLang(curLang);
+updateUI();
+setInterval(renderCheckin,60000);
+</script>
+</body>
+</html>
