@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6T9 EARN</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box} body{background:#0b0b1a;color:#fff;font-family:Arial;margin:0;padding:0}
+.topbar{display:flex;gap:6px;overflow-x:auto;padding:10px;background:#14142b;white-space:nowrap}
+.topbar button{background:#1e1e3a;border:1px solid #333;color:#fff;padding:7px 12px;border-radius:20px;cursor:pointer;font-size:13px}
+.topbar button.active{background:#8b5cf6;border-color:#8b5cf6}
+.container{padding:16px;padding-bottom:90px}
+.card{background:#1a1a2e;border-radius:15px;padding:18px;margin:14px 0;text-align:center}
+.btn{background:linear-gradient(90deg,#8b5cf6,#06b6d4);border:none;color:#fff;padding:14px;width:100%;border-radius:12px;font-size:15px;font-weight:bold;margin:7px 0;cursor:pointer}
+.btn:disabled{opacity:.5}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#14142b;display:flex;padding:10px}
+.nav button{flex:1;background:none;border:none;color:#aaa;font-size:14px;padding:10px;cursor:pointer}
+.nav button.active{color:#fff;background:#2a2a4a;border-radius:10px}
+.page{display:none}.page.active{display:block}
+.checkin{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0}
+.day{background:#22223a;border-radius:10px;padding:8px 2px;font-size:11px;border:1px solid #333}
+.day.done{background:#14532d;border-color:#22c55e}
+.day.current{border:2px solid #8b5cf6;background:#2a1e4a}
+.day.locked{opacity:.5}
+.small{font-size:12px;color:#aaa}
+</style>
+</head>
+<body>
+
+<!-- LANGUAGE BAR - HOME TOP -->
+<div class="topbar" id="langBar">
+  <button onclick="setLang('en')" data-lang="en">🇬🇧 English</button>
+  <button onclick="setLang('ru')" data-lang="ru">🇷🇺 Russian</button>
+  <button onclick="setLang('es')" data-lang="es">🇪🇸 Spanish</button>
+  <button onclick="setLang('hi')" data-lang="hi">🇮🇳 Hindi</button>
+  <button onclick="setLang('pt')" data-lang="pt">🇵🇹 Portuguese</button>
+  <button onclick="setLang('tr')" data-lang="tr">🇹🇷 Turkish</button>
+  <button onclick="setLang('ar')" data-lang="ar">🇦🇪 Arabic</button>
+</div>
+
+<div class="container">
+<!-- HOME PAGE -->
+<div id="page-home" class="page active">
+  <h2 id="t_welcome">Welcome to 6T9 EARN 🚀</h2>
+  <p class="small" id="t_sub">Earn Real USDT Daily - 100% Free!</p>
+  <div class="card"><div id="t_balance">Balance</div><h1>0.00 USDT</h1><button class="btn" id="t_withdraw">💰 Withdraw</button></div>
+  <button class="btn" id="t_ads" onclick="showPage('tasks')">📺 Watch Ads & Earn</button>
+  <button class="btn" id="t_invite">👥 Invite Friends & Earn 5%</button>
+</div>
+
+<!-- TASKS PAGE -->
+<div id="page-tasks" class="page">
+  <h3 id="t_tasksTitle">Tasks</h3>
+  <!-- DAILY CHECK-IN - SMALL + INSIDE TASKS -->
+  <div class="card" style="text-align:left;padding:14px">
+    <b id="t_checkin">📅 Daily Check-in</b> <span class="small" id="checkinTimer"></span>
+    <div class="checkin" id="checkinGrid"></div>
+    <button class="btn" id="claimBtn" onclick="claimCheckin()">Claim Today</button>
+    <div class="small" id="t_checkinNote">Claim every 24 hours. Miss 1 day = Restart from Day 1.</div>
+  </div>
+  <button class="btn" id="t_ads2">📺 Watch Ad - Earn 0.01 USDT</button>
+  <button class="btn" id="t_task1">✅ Join Telegram Channel</button>
+  <button class="btn" id="t_task2">✅ Follow on X</button>
+</div>
+
+<!-- WALLET PAGE -->
+<div id="page-wallet" class="page">
+  <h3 id="t_wallet">Wallet</h3>
+  <div class="card"><div id="t_balance2">Balance</div><h1>0.00 USDT</h1><p class="small">Min Withdraw: 0.50 USDT</p><button class="btn" id="t_withdraw2">💰 Withdraw</button></div>
+</div>
+</div>
+
+<div class="nav">
+  <button onclick="showPage('home')" id="nav-home" class="active">🏠 <span id="t_home">Home</span></button>
+  <button onclick="showPage('tasks')" id="nav-tasks">✅ <span id="t_tasks">Tasks</span></button>
+  <button onclick="showPage('wallet')" id="nav-wallet">💰 <span id="t_wallet2">Wallet</span></button>
+</div>
+
+<script>
+const T={
+en:{welcome:"Welcome to 6T9 EARN 🚀",sub:"Earn Real USDT Daily - 100% Free!",balance:"Balance",withdraw:"💰 Withdraw",ads:"📺 Watch Ads & Earn",invite:"👥 Invite Friends & Earn 5%",tasksTitle:"Tasks",checkin:"📅 Daily Check-in",checkinNote:"Claim every 24 hours. Miss 1 day = Restart from Day 1.",ads2:"📺 Watch Ad - Earn 0.01 USDT",task1:"✅ Join Telegram Channel",task2:"✅ Follow on X",wallet:"Wallet",balance2:"Balance",withdraw2:"💰 Withdraw",home:"Home",tasks:"Tasks",wallet2:"Wallet",claim:"Claim Today",claimed:"✅ Claimed - Come back in 24h",wait:"Wait: "},
+ru:{welcome:"Добро пожаловать в 6T9 EARN 🚀",sub:"Зарабатывайте USDT каждый день - 100% бесплатно!",balance:"Баланс",withdraw:"💰 Вывод",ads:"📺 Смотреть рекламу и зарабатывать",invite:"👥 Пригласить друзей и получить 5%",tasksTitle:"Задания",checkin:"📅 Ежедневный бонус",checkinNote:"Забирайте каждые 24 часа. Пропустили 1 день = Начать с 1 дня.",ads2:"📺 Смотреть рекламу - 0.01 USDT",task1:"✅ Подписаться на Telegram",task2:"✅ Подписаться на X",wallet:"Кошелек",balance2:"Баланс",withdraw2:"💰 Вывод",home:"Главная",tasks:"Задания",wallet2:"Кошелек",claim:"Забрать сегодня",claimed:"✅ Забрано - Вернитесь через 24ч",wait:"Ждите: "},
+es:{welcome:"Bienvenido a 6T9 EARN 🚀",sub:"Gana USDT real todos los días - ¡100% Gratis!",balance:"Saldo",withdraw:"💰 Retirar",ads:"📺 Ver anuncios y ganar",invite:"👥 Invitar amigos y ganar 5%",tasksTitle:"Tareas",checkin:"📅 Check-in Diario",checkinNote:"Reclama cada 24 horas. Si pierdes 1 día = Empieza desde el Día 1.",ads2:"📺 Ver anuncio - Gana 0.01 USDT",task1:"✅ Unirse a Telegram",task2:"✅ Seguir en X",wallet:"Billetera",balance2:"Saldo",withdraw2:"💰 Retirar",home:"Inicio",tasks:"Tareas",wallet2:"Billetera",claim:"Reclamar Hoy",claimed:"✅ Reclamado - Vuelve en 24h",wait:"Espera: "},
+hi:{welcome:"6T9 EARN में आपका स्वागत है 🚀",sub:"रोज़ असली USDT कमाएं - 100% मुफ़्त!",balance:"बैलेंस",withdraw:"💰 निकासी",ads:"📺 विज्ञापन देखें और कमाएं",invite:"👥 दोस्तों को आमंत्रित करें और 5% कमाएं",tasksTitle:"टास्क",checkin:"📅 डेली चेक-इन",checkinNote:"हर 24 घंटे में क्लेम करें। 1 दिन छूटा = फिर से दिन 1 से शुरू।",ads2:"📺 विज्ञापन देखें - 0.01 USDT कमाएं",task1:"✅ टेलीग्राम चैनल जॉइन करें",task2:"✅ X पर फॉलो करें",wallet:"वॉलेट",balance2:"बैलेंस",withdraw2:"💰 निकासी",home:"होम",tasks:"टास्क",wallet2:"वॉलेट",claim:"आज क्लेम करें",claimed:"✅ क्लेम हो गया - 24 घंटे बाद आएं",wait:"रुकें: "},
+pt:{welcome:"Bem-vindo ao 6T9 EARN 🚀",sub:"Ganhe USDT real todos os dias - 100% Grátis!",balance:"Saldo",withdraw:"💰 Sacar",ads:"📺 Assistir anúncios e ganhar",invite:"👥 Convidar amigos e ganhar 5%",tasksTitle:"Tarefas",checkin:"📅 Check-in Diário",checkinNote:"Resgate a cada 24 horas. Perdeu 1 dia = Recomeça do Dia 1.",ads2:"📺 Assistir anúncio - Ganhe 0.01 USDT",task1:"✅ Entrar no Telegram",task2:"✅ Seguir no X",wallet:"Carteira",balance2:"Saldo",withdraw2:"💰 Sacar",home:"Início",tasks:"Tarefas",wallet2:"Carteira",claim:"Resgatar Hoje",claimed:"✅ Resgatado - Volte em 24h",wait:"Aguarde: "},
+tr:{welcome:"6T9 EARN'a Hoş Geldiniz 🚀",sub:"Her gün Gerçek USDT Kazanın - %100 Ücretsiz!",balance:"Bakiye",withdraw:"💰 Çekim",ads:"📺 Reklam İzle ve Kazan",invite:"👥 Arkadaş Davet Et ve %5 Kazan",tasksTitle:"Görevler",checkin:"📅 Günlük Giriş",checkinNote:"Her 24 saatte bir al. 1 gün kaçırırsan = 1. Günden başla.",ads2:"📺 Reklam İzle - 0.01 USDT Kazan",task1:"✅ Telegram'a Katıl",task2:"✅ X'te Takip Et",wallet:"Cüzdan",balance2:"Bakiye",withdraw2:"💰 Çekim",home:"Ana Sayfa",tasks:"Görevler",wallet2:"Cüzdan",claim:"Bugün Al",claimed:"✅ Alındı - 24 saat sonra gel",wait:"Bekle: "},
+ar:{welcome:"مرحباً بك في 6T9 EARN 🚀",sub:"اربح USDT حقيقي يومياً - مجاناً 100%!",balance:"الرصيد",withdraw:"💰 سحب",ads:"📺 مشاهدة الإعلانات والربح",invite:"👥 دعوة الأصدقاء وربح 5%",tasksTitle:"المهام",checkin:"📅 تسجيل الدخول اليومي",checkinNote:"اطلب كل 24 ساعة. فاتك يوم واحد = ابدأ من اليوم 1.",ads2:"📺 مشاهدة إعلان - اربح 0.01 USDT",task1:"✅ انضم إلى تيليجرام",task2:"✅ تابع على X",wallet:"المحفظة",balance2:"الرصيد",withdraw2:"💰 سحب",home:"الرئيسية",tasks:"المهام",wallet2:"المحفظة",claim:"اطلب اليوم",claimed:"✅ تم الطلب - عد بعد 24 ساعة",wait:"انتظر: "}
+};
+let lang=localStorage.getItem('lang')||'en';
+function setLang(l){lang=l;localStorage.setItem('lang',l);let t=T[l];document.getElementById('t_welcome').innerText=t.welcome;document.getElementById('t_sub').innerText=t.sub;document.getElementById('t_balance').innerText=t.balance;document.getElementById('t_withdraw').innerText=t.withdraw;document.getElementById('t_ads').innerText=t.ads;document.getElementById('t_invite').innerText=t.invite;document.getElementById('t_tasksTitle').innerText=t.tasksTitle;document.getElementById('t_checkin').innerText=t.checkin;document.getElementById('t_checkinNote').innerText=t.checkinNote;document.getElementById('t_ads2').innerText=t.ads2;document.getElementById('t_task1').innerText=t.task1;document.getElementById('t_task2').innerText=t.task2;document.getElementById('t_wallet').innerText=t.wallet;document.getElementById('t_balance2').innerText=t.balance2;document.getElementById('t_withdraw2').innerText=t.withdraw2;document.getElementById('t_home').innerText=t.home;document.getElementById('t_tasks').innerText=t.tasks;document.getElementById('t_wallet2').innerText=t.wallet2;document.querySelectorAll('#langBar button').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));renderCheckin();}
+function showPage(p){document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));document.getElementById('page-'+p).classList.add('active');document.querySelectorAll('.nav button').forEach(e=>e.classList.remove('active'));document.getElementById('nav-'+p).classList.add('active');}
+
+// --- DAILY CHECK-IN LOGIC - 24H + RESET ---
+const rewards=[0.01,0.02,0.03,0.05,0.07,0.10,0.20];
+function getState(){return JSON.parse(localStorage.getItem('checkin')||'{"day":0,"lastClaim":0}')}
+function saveState(s){localStorage.setItem('checkin',JSON.stringify(s))}
+function renderCheckin(){
+ let s=getState(); let now=Date.now(); let t=T[lang];
+ // Missed >48h = Reset to Day 1
+ if(s.lastClaim>0 && now - s.lastClaim > 48*60*60*1000){ s={day:0,lastClaim:0}; saveState(s); }
+ let canClaim = (now - s.lastClaim >= 24*60*60*1000) || s.lastClaim===0;
+ let grid=document.getElementById('checkinGrid'); grid.innerHTML='';
+ for(let i=0;i<7;i++){ let d=document.createElement('div'); d.className='day'+(i<s.day?' done':i===s.day?' current':' locked'); d.innerHTML=`Day ${i+1}<br><b>${rewards[i]} USDT</b><br>${i<s.day?'✅':i===s.day?'⭐':'🔒'}`; grid.appendChild(d); }
+ let btn=document.getElementById('claimBtn');
+ if(canClaim){ btn.disabled=false; btn.innerText=t.claim; document.getElementById('checkinTimer').innerText=''; }
+ else{ btn.disabled=true; btn.innerText=t.claimed; let left=24*60*60*1000-(now-s.lastClaim); let h=Math.floor(left/3600000), m=Math.floor(left%3600000/60000); document.getElementById('checkinTimer').innerText=` - ${t.wait}${h}h ${m}m`; }
+}
+function claimCheckin(){ let s=getState(); let now=Date.now(); if(now - s.lastClaim < 24*60*60*1000 && s.lastClaim!==0) return alert('Wait 24 hours!'); s.day=s.day+1; if(s.day>7) s.day=1; s.lastClaim=now; saveState(s); alert(`Claimed ${rewards[s.day-1]} USDT! Day ${s.day}`); renderCheckin(); }
+setLang(lang); renderCheckin(); setInterval(renderCheckin,60000);
+Telegram.WebApp.ready(); Telegram.WebApp.expand();
+</script>
+</body>
+</html>
